@@ -1,0 +1,26 @@
+groups:
+- name: rule-bot-hb
+  interval: 1s   # defaults to global interval
+  rules:
+  - record: bots:rate_hb:rate_hb_1m
+    expr: rate(request_hb_total[1m])
+  - alert: HeartbeatLost
+    # Expressions remain PromQL as before and can be spread over
+    # multiple lines via YAML’s multi-line strings.
+    expr: rate(request_hb_total[5s]) < 6
+    for: 1s
+    labels:
+      severity: important
+    annotations:
+      description: '{{ $labels.group }} has missed some heartbeats'
+- name: rule-bot-instances
+  rules:
+  - alert: BotDown
+    expr: up == 0
+    for: 3s
+    labels:
+      severity: critical
+    # Prometheus templates apply here in the annotation and label fields of the alert.
+    annotations:
+      description: 'Instance Down with {{ $labels.service }}'
+      summary: 'Instance {{ $labels.instance }} down'

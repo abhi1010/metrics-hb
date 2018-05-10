@@ -1,0 +1,5 @@
+groups:
+- name: rate_request_hb_total
+  rules:
+  - record: bots:rate_request_hb_total:rate_request_hb_total1m
+    expr: rate(request_hb_total[1m])

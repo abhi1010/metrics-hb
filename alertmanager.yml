@@ -1,0 +1,42 @@
+route:
+ group_by: ['severity', 'alertname']
+
+ group_wait: 5s
+ group_interval: 10s
+ repeat_interval: 20s
+ # If an alert isn't caught by a route, send it slack.
+ receiver: slack_plus_flask
+ routes:
+  # Send severity=slack alerts to slack.
+  - match:
+      severity: slack
+    receiver: slack_plus_flask
+
+  # Send severity=slack alerts to slack.
+  - match:
+      severity: critical
+    receiver: slack_only
+
+  # Send severity=slack alerts to slack.
+  - match:
+      severity: important
+    receiver: hook_only
+
+receivers:
+- name: slack_plus_flask
+  slack_configs:
+  - api_url: https://hooks.slack.com/services/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
+    channel: '#bots-hb'
+  webhook_configs:
+  - url: http://localhost:5001
+
+- name: slack_only
+  slack_configs:
+  - api_url: https://hooks.slack.com/services/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
+    channel: '#bots-hb'
+
+- name: hook_only
+  webhook_configs:
+  - url: http://localhost:5001
+
+# Example: https://github.com/prometheus/alertmanager/blob/master/doc/examples/simple.yml
